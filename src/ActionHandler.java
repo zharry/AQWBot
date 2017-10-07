@@ -12,6 +12,7 @@ public class ActionHandler {
 	private Random random;
 	private Robot robot;
 
+	private final int SHOWX = 0, SHOWY = 0;
 	private int cx, cy;
 	private int ox, oy; // Location of Show Players at small, cropped to size
 
@@ -19,8 +20,8 @@ public class ActionHandler {
 		random = new Random();
 		robot = new Robot();
 
-		cx = x;
-		cy = y;
+		cx = x + 700;
+		cy = y + 354;
 
 		ox = 700; // Max Size: 704
 		oy = 354; // Max Size: 405
