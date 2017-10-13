@@ -38,7 +38,7 @@ public class AQWBot {
 		// Wait for user to position mouse
 		System.out.println("Open ONE instance of 'aq.com/play-now' on your primary display");
 		System.out.println("Use display quality: Low");
-		System.out.println("Position Mouse just to the right of the Artix Logo");
+		System.out.println("Make sure the entire game is within the display");
 		System.out.println("Calibrating...");
 		for (int i = 3; i > 0; i--) {
 			System.out.println(i + "...");
@@ -50,6 +50,7 @@ public class AQWBot {
 		// Calibrate Display
 		ScreenHandler screen = new ScreenHandler();
 		int[] xy = screen.calibrate();
+		System.out.println("Calibration Completed!");
 
 		// Initialize Bot Handlers
 		ActionHandler action = new ActionHandler(xy[0], xy[1]);
@@ -58,8 +59,15 @@ public class AQWBot {
 		System.out.println("Smooth Mouse movement: " + (smooth ? "Enabled" : "Disabled"));
 		System.out.println("Bot is running for: " + bot);
 		System.out.println("With Private Room Instance Number: " + roomNumber);
-		Thread.sleep(30000);
-		action.typeString("hi");
+		Thread.sleep(1000);
+		
+		// Login to Game
+		System.out.println("Login");
+		action.moveMouse(319, 232, 74, 23, true, smooth);
+		Thread.sleep(5000);
+		System.out.println("Joing 'Galanoth' Server");
+		action.moveMouse(361, 162, 194, 15, true, smooth);
+		Thread.sleep(10000);
 
 	}
 
