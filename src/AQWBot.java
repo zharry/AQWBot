@@ -34,7 +34,7 @@ public class AQWBot {
 			a = s.nextLine();
 		}
 		s.close();
-
+  
 		// Wait for user to position mouse
 		System.out.println("Open ONE instance of 'aq.com/play-now' on your primary display");
 		System.out.println("Use display quality: Low");
