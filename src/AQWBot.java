@@ -1,11 +1,10 @@
-import java.awt.MouseInfo;
-import java.awt.Point;
+import java.io.File;
 import java.util.Random;
 import java.util.Scanner;
 
 public class AQWBot {
 
-	public static final String version = "17.10.07a1";
+	public static final String version = "17.10.21r1";
 	public static Random random = new Random();
 
 	public static boolean smooth;
@@ -34,7 +33,7 @@ public class AQWBot {
 			a = s.nextLine();
 		}
 		s.close();
-  
+
 		// Wait for user to position mouse
 		System.out.println("Open ONE instance of 'aq.com/play-now' on your primary display");
 		System.out.println("Use display quality: Low");
@@ -44,12 +43,26 @@ public class AQWBot {
 			System.out.println(i + "...");
 			Thread.sleep(1000);
 		}
-		Point init = MouseInfo.getPointerInfo().getLocation();
-		int x = init.x, y = init.y;
 
 		// Calibrate Display
+		boolean calDone = false;
+		int[] xy = { -1, -1 };
+		File prevCalibrate = new File("previous_calibration.aqwbot");
+		if (prevCalibrate.exists()) {
+			System.out.println("Previous calibration detected. Use? (Y)");
+			String u = s.nextLine();
+			if (u.equals("") || u.equals("Y")) {
+				Scanner fileScanner = new Scanner(prevCalibrate);
+				String[] xyProc = fileScanner.nextLine().split(" ");
+				fileScanner.close();
+				xy[0] = Integer.parseInt(xyProc[0]);
+				xy[1] = Integer.parseInt(xyProc[1]);
+				calDone = true;
+			}
+		}
 		ScreenHandler screen = new ScreenHandler();
-		int[] xy = screen.calibrate();
+		if (!calDone)
+			xy = screen.calibrate();
 		System.out.println("Calibration Completed!");
 
 		// Initialize Bot Handlers
@@ -60,7 +73,7 @@ public class AQWBot {
 		System.out.println("Bot is running for: " + bot);
 		System.out.println("With Private Room Instance Number: " + roomNumber);
 		Thread.sleep(1000);
-		
+
 		// Login to Game
 		System.out.println("Login");
 		action.moveMouse(319, 232, 74, 23, true, smooth);
@@ -68,6 +81,13 @@ public class AQWBot {
 		System.out.println("Joing 'Galanoth' Server");
 		action.moveMouse(361, 162, 194, 15, true, smooth);
 		Thread.sleep(10000);
+
+		// Go to Mogloween
+		action.joinRoom("mogloween", true);
+		Thread.sleep(12000);
+
+		// Click Quest 1
+		action.clickQuest(1);
 
 	}
 

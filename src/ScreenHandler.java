@@ -4,19 +4,18 @@ import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Random;
 
 public class ScreenHandler {
 
-	private Random random;
 	private Robot robot;
 
 	private int screenWidth, screenHeight;
 	private final int BLACK = -16777216;
 
 	public ScreenHandler() throws AWTException {
-		random = new Random();
 		robot = new Robot();
 
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -43,8 +42,13 @@ public class ScreenHandler {
 						} catch (Exception e) {
 						}
 					}
-					if (found)
+					if (found) {
+						File prevCalibrate = new File("previous_calibration.aqwbot");
+						FileWriter fileWriter = new FileWriter(prevCalibrate);
+						fileWriter.write(x + " " + y);
+						fileWriter.close();
 						return new int[] { x, y };
+					}
 				}
 			}
 		}

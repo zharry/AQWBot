@@ -12,7 +12,6 @@ public class ActionHandler {
 	private Random random;
 	private Robot robot;
 
-	private final int SHOWX = 0, SHOWY = 0;
 	private int cx, cy;
 	private int ox, oy; // Location of Show Players at small, cropped to size
 
@@ -105,6 +104,11 @@ public class ActionHandler {
 	public void rest() throws Exception {
 		System.out.println("Resting");
 		typeString("/rest");
+	}
+	
+	public void joinRoom(String room, boolean p) throws Exception {
+		System.out.println("Joining /" + room);
+		typeString("/join " + room + (p ? "-" + AQWBot.roomNumber : ""));
 	}
 
 	public void moveToTarget() throws InterruptedException {
