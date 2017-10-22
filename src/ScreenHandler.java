@@ -1,5 +1,7 @@
 import java.awt.AWTException;
 import java.awt.Dimension;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
@@ -15,6 +17,7 @@ public class ScreenHandler {
 	private int screenWidth, screenHeight;
 	private final int BLACK = -16777216;
 	private final int QUESTCOMPLETE = -6684927;
+	private final int DISCONNECTED = -8496598;
 
 	public ScreenHandler() throws AWTException {
 		robot = new Robot();
@@ -54,6 +57,17 @@ public class ScreenHandler {
 			}
 		}
 		return null;
+	}
+
+	public boolean isDisconnected() throws Exception {
+		AQWBot.action.moveMouse(670, 400, 1, 1, false, AQWBot.smooth);
+		Point init = MouseInfo.getPointerInfo().getLocation();
+		int x = init.x, y = init.y;
+		BufferedImage display = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+		if (display.getRGB(x, y) == DISCONNECTED || calibrate() != null) {
+			return true;
+		}
+		return false;
 	}
 
 	public boolean anyQuestComplete() throws IOException {

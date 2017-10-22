@@ -4,9 +4,14 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
 
+import com.sun.glass.events.KeyEvent;
+
 public class AQWBot {
 
-	public static final String VERSION = "17.10.21r1";
+	public static ActionHandler action;
+	public static ScreenHandler screen;
+
+	public static final String VERSION = "17.10.22r1";
 	public static Random random = new Random();
 
 	public static boolean smooth;
@@ -26,6 +31,7 @@ public class AQWBot {
 		if (debugFile.exists())
 			aqbcDebug = true;
 
+		@SuppressWarnings("resource")
 		Scanner s = new Scanner(System.in);
 
 		System.out.println("Welcome to Harry's AQW Bot version " + VERSION);
@@ -60,6 +66,7 @@ public class AQWBot {
 		}
 		botFile = new File("bots/" + bot + ".aqwbot");
 		botFileString = bot + ".aqwbot";
+		@SuppressWarnings("resource")
 		Scanner readBotCmds = new Scanner(botFile);
 		int readIndex = 1;
 		while (readBotCmds.hasNext()) {
@@ -116,7 +123,7 @@ public class AQWBot {
 		// Calibrate Display
 		boolean calDone = false, isLoggedOn = false;
 		int[] xy = { -1, -1 };
-		ScreenHandler screen = new ScreenHandler();
+		screen = new ScreenHandler();
 		File prevCalibrate = new File("previous_calibration.aqwbotconfig");
 		if (prevCalibrate.exists()) {
 			System.out.println("Previous calibration detected. Use? (Y)");
@@ -148,7 +155,7 @@ public class AQWBot {
 		System.out.println("----------");
 
 		// Initialize Bot Handlers
-		ActionHandler action = new ActionHandler(xy[0], xy[1]);
+		action = new ActionHandler(xy[0], xy[1]);
 		System.out.println("Bot Initiated!");
 		System.out.println("User Status: " + (isLoggedOn ? "Logged In" : "Logged Off"));
 		System.out.println("AQW Flash Player Begins at : " + xy[0] + ", " + xy[1] + " Size (706x405)");
@@ -195,6 +202,17 @@ public class AQWBot {
 					// RESTART
 					case "restart":
 						cI = startIndex;
+						if (screen.isDisconnected()) {
+							System.out.println("Re-logging");
+							action.moveMouse(-2, -2, 1, 1, true, smooth);
+							action.pressKey(KeyEvent.VK_F5);
+							Thread.sleep(5000);
+							action.moveMouse(319, 232, 74, 23, true, smooth);
+							Thread.sleep(5000);
+							System.out.println("Joing 'Galanoth' Server");
+							action.moveMouse(361, 162, 194, 15, true, smooth);
+							Thread.sleep(10000);
+						}
 						break;
 					// END RESTART
 

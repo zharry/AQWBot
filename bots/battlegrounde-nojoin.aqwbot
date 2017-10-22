@@ -2,14 +2,9 @@
 @name Battleground E - XP+Quest Auto 3 Bot
 @shortname XP Bot
 @version 0.1
-@aqbcversion 17.10.21r1
-@location Anywhere/Logged Off
+@aqbcversion 17.10.22r1
+@location Battlegrounde Quest Room
 @recommendedclass Shaman, Necromancer, Abyssal Angel
-
-joinroom battlegrounde false
-sleep 3000
-rem Move to upper room
-movemouse 322 79 97 51 true
 
 set QUESTCOMPLETE TRUE
 rem Start Battlegrounde Loop
