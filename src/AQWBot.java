@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,8 +19,6 @@ public class AQWBot {
 	public static boolean smooth;
 	public static int roomNumber, consoleMode;
 
-	public static boolean aqbcDebug = false;
-
 	// Bot Variables
 	static File botFile;
 	public static ArrayList<String> aqbcCommands = new ArrayList<String>();
@@ -28,9 +27,12 @@ public class AQWBot {
 
 	public static void consoleLog(String s, int type) {
 		LocalDateTime now = LocalDateTime.now();
-		String time = "[" + now.getHour() + ":" + now.getMinute() + ":" + now.getSecond() + "]";
+		String time = String.format("[%02d:%02d:%02d]", now.getHour(), now.getMinute(), now.getSecond());
 		String level = type == 0 ? "INFO" : type == 1 ? "WARN" : "ERROR";
-		System.out.println(time + "[" + level + "]: " + s);
+		if (type == 4)
+			level = "LOG";
+		if (type >= consoleMode)
+			System.out.println(time + "[" + level + "]: " + s);
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -46,13 +48,13 @@ public class AQWBot {
 		System.out.println("----------");
 
 		// Console output level
-		System.out.println("Console output threshold: (info/[warn]/error)");
+		System.out.print("Console output threshold: (info/[warn]/error) ");
 		String consoleOT = s.nextLine();
 		consoleMode = (consoleOT.equals("") || consoleOT.equals("warn")) ? 1 : (consoleOT.equals("error") ? 2 : 0);
 		System.out.println("----------");
 
 		// Bot Variables
-		System.out.print("Activate Smooth Mouse Movement? (y/N)");
+		System.out.print("Activate Smooth Mouse Movement? (y/N) ");
 		smooth = s.nextLine().equals("y") ? true : false;
 		System.out.print("Private Instance Room ID: ");
 		String roomP = s.nextLine();
@@ -73,14 +75,27 @@ public class AQWBot {
 		}
 		System.out.println("----------");
 
-		// User chooses bot
-		System.out.print("What bot would you like to use? ");
-		String bot = s.nextLine();
-		if (bot.endsWith(".aqwbot")) {
-			bot = bot.replace(".aqwbot", "");
+		// Find last used bot
+		File lastBot = new File("previous_calibration.aqwbotconfig");
+		String lastUsed = null, bot;
+		if (lastBot.exists()) {
+			Scanner lb = new Scanner(lastBot);
+			lb.nextLine();
+			lastUsed = lb.nextLine();
+			lb.close();
 		}
+
+		// User chooses bot
+		System.out.print("What bot would you like to use?" + (lastUsed != null ? " (" + lastUsed + ")" : "") + " ");
+		bot = s.nextLine();
+		if (bot.equals("") && lastUsed != null)
+			bot = lastUsed;
+		if (bot.endsWith(".aqwbot"))
+			bot = bot.replace(".aqwbot", "");
 		botFile = new File("bots/" + bot + ".aqwbot");
 		botFileString = bot + ".aqwbot";
+
+		// Output bot metadata
 		@SuppressWarnings("resource")
 		Scanner readBotCmds = new Scanner(botFile);
 		int readIndex = 1;
@@ -141,7 +156,7 @@ public class AQWBot {
 		screen = new ScreenHandler();
 		File prevCalibrate = new File("previous_calibration.aqwbotconfig");
 		if (prevCalibrate.exists()) {
-			System.out.println("Previous calibration detected. Use? (Y)");
+			System.out.print("Previous calibration detected. Use? (Y) ");
 			String u = s.nextLine();
 			if (u.equals("") || u.equals("Y")) {
 				Scanner fileScanner = new Scanner(prevCalibrate);
@@ -167,6 +182,14 @@ public class AQWBot {
 		}
 		System.out.println("Calibration Completed!");
 		s.close();
+
+		// Write out last bot info
+		if (lastBot.exists()) {
+			FileWriter writeLB = new FileWriter(lastBot);
+			writeLB.write(xy[0] + " " + xy[1] + "\n");
+			writeLB.write(bot);
+			writeLB.close();
+		}
 		System.out.println("----------");
 
 		// Initialize Bot Handlers
@@ -233,6 +256,7 @@ public class AQWBot {
 							consoleLog("Joing 'Galanoth' Server", 2);
 							action.moveMouse(361, 162, 194, 15, true, smooth);
 							Thread.sleep(10000);
+							cI = 1;
 						}
 						break;
 					// END RESTART
@@ -364,7 +388,7 @@ public class AQWBot {
 
 							// REM
 							case "rem":
-								consoleLog(curArgs, 0);
+								consoleLog(curArgs, 4);
 								break;
 							// END REM
 
