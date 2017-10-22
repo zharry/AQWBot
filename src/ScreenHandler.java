@@ -17,7 +17,7 @@ public class ScreenHandler {
 	private int screenWidth, screenHeight;
 	private final int BLACK = -16777216;
 	private final int QUESTCOMPLETE = -6684927;
-	private final int DISCONNECTED = -8496598;
+	private final int DISCONNECTED = -13283924;
 
 	public ScreenHandler() throws AWTException {
 		robot = new Robot();
@@ -60,14 +60,14 @@ public class ScreenHandler {
 	}
 
 	public boolean isDisconnected() throws Exception {
-		AQWBot.action.moveMouse(670, 400, 1, 1, false, AQWBot.smooth);
+		AQWBot.action.moveMouse(484, 381, 1, 1, false, AQWBot.smooth);
 		Point init = MouseInfo.getPointerInfo().getLocation();
 		int x = init.x, y = init.y;
 		BufferedImage display = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
-		if (display.getRGB(x, y) == DISCONNECTED || calibrate() != null) {
-			return true;
+		if (display.getRGB(x-1, y-1) == DISCONNECTED) {
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 	public boolean anyQuestComplete() throws IOException {

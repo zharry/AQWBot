@@ -226,13 +226,15 @@ public class AQWBot {
 		int cI = 1; // Command Index
 		int startIndex = -1;
 		for (; cI <= aqbcCommands.size(); cI++) {
+			consoleLog("AQBC Interpreter on line " + cI, 0);
+
 			String cmdProc = aqbcCommands.get(cI - 1);
 
 			// DO and IF Loop
 			for (int c = 0; c < 1; c++) {
 
-				// Ignore Newlines and @metedata commands
-				if (!(cmdProc.equals("") || cmdProc.startsWith("@"))) {
+				// Ignore Newlines and @metedata commands and #comments
+				if (!(cmdProc.equals("") || cmdProc.startsWith("@") || cmdProc.startsWith("#"))) {
 
 					// Test for Single Argument Commands
 					switch (cmdProc) {
@@ -250,7 +252,7 @@ public class AQWBot {
 							consoleLog("Re-logging", 2);
 							action.moveMouse(-2, -2, 1, 1, true, smooth);
 							action.pressKey(KeyEvent.VK_F5);
-							Thread.sleep(5000);
+							Thread.sleep(10000);
 							action.moveMouse(319, 232, 74, 23, true, smooth);
 							Thread.sleep(5000);
 							consoleLog("Joing 'Galanoth' Server", 2);

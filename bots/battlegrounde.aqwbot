@@ -6,13 +6,18 @@
 @location Anywhere/Logged Off
 @recommendedclass Shaman, Necromancer, Abyssal Angel
 
+
+# Initalization of bot
 joinroom battlegrounde false
 sleep 3000
 rem Move to upper room
 movemouse 322 79 97 51 true
 
+# Reset Variables
 set QUESTCOMPLETE TRUE
 rem Start Battlegrounde Loop
+
+# Bot Loop
 start
 if check-QUESTCOMPLETE=TRUE : sleep 3000
 if check-QUESTCOMPLETE=TRUE : rem Interact with Thok
@@ -33,10 +38,12 @@ if check-QUESTCOMPLETE=TRUE : movemouse 296 63 113 17 true
 if check-QUESTCOMPLETE=TRUE : sleep 1250
 if check-QUESTCOMPLETE=TRUE : set QUESTCOMPLETE FALSE
 
+# Skill 3 Loop
 rem Battle
 do 20 : useskill 3 1000
-checkquests
 
+# Check if quest complete to reset loop
+checkquests
 if anyquestcomplete : set QUESTCOMPLETE TRUE
 if check-QUESTCOMPLETE=TRUE : rem Move to quest room
 if check-QUESTCOMPLETE=TRUE : movemouse 338 1 61 6 true
