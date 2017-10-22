@@ -45,13 +45,13 @@ public class ActionHandler {
 	}
 
 	public void useSkill(int skillID, int delayTime) throws InterruptedException {
-		System.out.println("Skill " + skillID);
+		AQWBot.consoleLog("Skill " + skillID, 0);
 		pressKey((skillID + "").charAt(0));
 		Thread.sleep(random.nextInt(100) + 100 + delayTime);
 	}
 
 	public void typeString(String s) throws Exception {
-		System.out.println("Typing and entering '" + s + "'");
+		AQWBot.consoleLog("Typing and entering '" + s + "'", 0);
 		// Move to text area
 		moveMouse(62, 378, 10, 10, true, AQWBot.smooth);
 
@@ -75,7 +75,7 @@ public class ActionHandler {
 	}
 
 	public void moveMouse(int x, int y, int rx, int ry, boolean click, boolean smooth) throws Exception {
-		System.out.print("Moving and... ");
+		String out = "Moving and... ";
 		int x2 = x - ox + randLoc(rx) + cx;
 		int y2 = y - oy + randLoc(ry) + cy;
 		if (!smooth) {
@@ -95,54 +95,53 @@ public class ActionHandler {
 		}
 		Thread.sleep(random.nextInt(250) + 250);
 		if (click) {
-			System.out.print("Clicking Mouse\n");
+			out += "Clicking Mouse";
 			pressMouse(InputEvent.BUTTON1_DOWN_MASK);
-		} else {
-			System.out.println();
 		}
+		AQWBot.consoleLog(out, 0);
 		Thread.sleep(random.nextInt(125) + 125);
 	}
 
 	public void checkQuests() throws Exception {
-		System.out.println("Opening Quest Dialog");
+		AQWBot.consoleLog("Opening Quest Dialog", 0);
 		moveMouse(526, 375, 16, 16, true, AQWBot.smooth);
 		moveMouse(512, 332, 28, 8, true, AQWBot.smooth);
 		Thread.sleep(random.nextInt(250) + 250);
 	}
 
 	public void closeCheckQuests() throws Exception {
-		System.out.println("Closing Quest Dialog");
+		AQWBot.consoleLog("Closing Quest Dialog", 0);
 		moveMouse(235, 68, 8, 8, true, AQWBot.smooth);
 		Thread.sleep(random.nextInt(250) + 250);
 	}
 
 	public void clickQuest(int place) throws Exception {
-		System.out.println("Click Quest " + place);
+		AQWBot.consoleLog("Click Quest " + place, 0);
 		int r = 4, x = 35, y = (int) Math.round(103 + ((place - 1) * 14.75));
 		moveMouse(x, y, r, r, true, AQWBot.smooth);
 		Thread.sleep(random.nextInt(500) + 2000);
 	}
 
 	public void questAction() throws Exception {
-		System.out.println("Click Quest Action");
+		AQWBot.consoleLog("Click Quest Action", 0);
 		moveMouse(104, 317, 12, 12, true, AQWBot.smooth);
 		Thread.sleep(random.nextInt(500) + 2000);
 	}
 
 	public void rest() throws Exception {
-		System.out.println("Resting");
+		AQWBot.consoleLog("Resting", 0);
 		typeString("/rest");
 		Thread.sleep(random.nextInt(125) + 125);
 	}
 
 	public void joinRoom(String room, boolean p) throws Exception {
-		System.out.println("Joining /" + room);
+		AQWBot.consoleLog("Joining /" + room, 0);
 		typeString("/join " + room + (p ? "-" + AQWBot.roomNumber : ""));
 		Thread.sleep(random.nextInt(125) + 125);
 	}
 
 	public void moveToTarget() throws InterruptedException {
-		System.out.println("Moving to Target (Double Tap 1)");
+		AQWBot.consoleLog("Moving to Target (Double Tap 1)", 0);
 		pressKey(KeyEvent.VK_1);
 		Thread.sleep(random.nextInt(100) + 100);
 		pressKey(KeyEvent.VK_1);

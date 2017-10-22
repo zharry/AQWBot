@@ -1,4 +1,5 @@
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -15,7 +16,7 @@ public class AQWBot {
 	public static Random random = new Random();
 
 	public static boolean smooth;
-	public static int roomNumber;
+	public static int roomNumber, consoleMode;
 
 	public static boolean aqbcDebug = false;
 
@@ -25,11 +26,18 @@ public class AQWBot {
 	public static String botAuthor = "", botName = "", botShortName = "", botVersion = "", aqbcVersion = "",
 			location = "", recommendedClass = "", botFileString;
 
+	public static void consoleLog(String s, int type) {
+		LocalDateTime now = LocalDateTime.now();
+		String time = "[" + now.getHour() + ":" + now.getMinute() + ":" + now.getSecond() + "]";
+		String level = type == 0 ? "INFO" : type == 1 ? "WARN" : "ERROR";
+		System.out.println(time + "[" + level + "]: " + s);
+	}
+
 	public static void main(String[] args) throws Exception {
-		// Check if AQBC Debug is enabled
-		File debugFile = new File("debug.aqwbotconfig");
-		if (debugFile.exists())
-			aqbcDebug = true;
+
+		/*
+		 * AQW BOT CONFIGURATION
+		 */
 
 		@SuppressWarnings("resource")
 		Scanner s = new Scanner(System.in);
@@ -37,6 +45,13 @@ public class AQWBot {
 		System.out.println("Welcome to Harry's AQW Bot version " + VERSION);
 		System.out.println("----------");
 
+		// Console output level
+		System.out.println("Console output threshold: (info/[warn]/error)");
+		String consoleOT = s.nextLine();
+		consoleMode = (consoleOT.equals("") || consoleOT.equals("warn")) ? 1 : (consoleOT.equals("error") ? 2 : 0);
+		System.out.println("----------");
+
+		// Bot Variables
 		System.out.print("Activate Smooth Mouse Movement? (y/N)");
 		smooth = s.nextLine().equals("y") ? true : false;
 		System.out.print("Private Instance Room ID: ");
@@ -157,6 +172,8 @@ public class AQWBot {
 		// Initialize Bot Handlers
 		action = new ActionHandler(xy[0], xy[1]);
 		System.out.println("Bot Initiated!");
+		System.out.println("Console Log Mode: "
+				+ (consoleMode == 0 ? "Info/Warn/Error" : consoleMode == 1 ? "Warn/Error" : "Error"));
 		System.out.println("User Status: " + (isLoggedOn ? "Logged In" : "Logged Off"));
 		System.out.println("AQW Flash Player Begins at : " + xy[0] + ", " + xy[1] + " Size (706x405)");
 		System.out.println("Smooth Mouse movement: " + (smooth ? "Enabled" : "Disabled"));
@@ -165,12 +182,16 @@ public class AQWBot {
 		System.out.println("----------");
 		Thread.sleep(1000);
 
+		/*
+		 * AQW BOT BEGINS
+		 */
+
 		// Login to Game
 		if (!isLoggedOn) {
-			System.out.println("Login");
+			consoleLog("Login", 1);
 			action.moveMouse(319, 232, 74, 23, true, smooth);
 			Thread.sleep(5000);
-			System.out.println("Joing 'Galanoth' Server");
+			consoleLog("Joing 'Galanoth' Server", 1);
 			action.moveMouse(361, 162, 194, 15, true, smooth);
 			Thread.sleep(10000);
 		}
@@ -203,13 +224,13 @@ public class AQWBot {
 					case "restart":
 						cI = startIndex;
 						if (screen.isDisconnected()) {
-							System.out.println("Re-logging");
+							consoleLog("Re-logging", 2);
 							action.moveMouse(-2, -2, 1, 1, true, smooth);
 							action.pressKey(KeyEvent.VK_F5);
 							Thread.sleep(5000);
 							action.moveMouse(319, 232, 74, 23, true, smooth);
 							Thread.sleep(5000);
-							System.out.println("Joing 'Galanoth' Server");
+							consoleLog("Joing 'Galanoth' Server", 2);
 							action.moveMouse(361, 162, 194, 15, true, smooth);
 							Thread.sleep(10000);
 						}
@@ -343,7 +364,7 @@ public class AQWBot {
 
 							// REM
 							case "rem":
-								System.out.println(curArgs);
+								consoleLog(curArgs, 0);
 								break;
 							// END REM
 
@@ -432,6 +453,10 @@ public class AQWBot {
 	}
 
 }
+
+/*
+ * AQBC EXCEPTIONS
+ */
 
 class AQBCException extends Exception {
 	private static final long serialVersionUID = -6211041561167007967L;
