@@ -25,5 +25,5 @@ bin/
 .classpath
 .project
 
-# AQW Bot files
-*.aqwbot
+# AQW Bot Config Files
+*.aqwbotconfig

@@ -14,6 +14,7 @@ public class ScreenHandler {
 
 	private int screenWidth, screenHeight;
 	private final int BLACK = -16777216;
+	private final int QUESTCOMPLETE = -6684927;
 
 	public ScreenHandler() throws AWTException {
 		robot = new Robot();
@@ -43,7 +44,7 @@ public class ScreenHandler {
 						}
 					}
 					if (found) {
-						File prevCalibrate = new File("previous_calibration.aqwbot");
+						File prevCalibrate = new File("previous_calibration.aqwbotconfig");
 						FileWriter fileWriter = new FileWriter(prevCalibrate);
 						fileWriter.write(x + " " + y);
 						fileWriter.close();
@@ -53,6 +54,19 @@ public class ScreenHandler {
 			}
 		}
 		return null;
+	}
+
+	public boolean anyQuestComplete() throws IOException {
+		BufferedImage display = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+		for (int x = 0; x < screenWidth; x++) {
+			for (int y = 0; y < screenHeight; y++) {
+				// Search for the Lime Green indicating a quest is completed
+				if (display.getRGB(x, y) == QUESTCOMPLETE) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 }

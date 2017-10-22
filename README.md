@@ -13,6 +13,10 @@
 
 ### How to use the bot
 
+## AQBC Documentation
+
+- sleep is required for only movemouse
+
 ## Release Notes
 
 ## Credits

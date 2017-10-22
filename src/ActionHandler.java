@@ -22,7 +22,7 @@ public class ActionHandler {
 		cx = x + 700;
 		cy = y + 354;
 
-		ox = 700; // Max Size: 704
+		ox = 700; // Max Size: 706
 		oy = 354; // Max Size: 405
 	}
 
@@ -44,6 +44,12 @@ public class ActionHandler {
 		Thread.sleep(random.nextInt(125) + 125);
 	}
 
+	public void useSkill(int skillID, int delayTime) throws InterruptedException {
+		System.out.println("Skill " + skillID);
+		pressKey((skillID + "").charAt(0));
+		Thread.sleep(random.nextInt(100) + 100 + delayTime);
+	}
+
 	public void typeString(String s) throws Exception {
 		System.out.println("Typing and entering '" + s + "'");
 		// Move to text area
@@ -58,7 +64,7 @@ public class ActionHandler {
 		Thread.sleep(random.nextInt(20) + 20);
 		robot.keyRelease(KeyEvent.VK_CONTROL);
 		pressKey(KeyEvent.VK_DELETE);
-		
+
 		// Type New String
 		char[] chars = s.toUpperCase().toCharArray();
 		for (int i = 0; i < chars.length; i++) {
@@ -91,24 +97,48 @@ public class ActionHandler {
 		if (click) {
 			System.out.print("Clicking Mouse\n");
 			pressMouse(InputEvent.BUTTON1_DOWN_MASK);
+		} else {
+			System.out.println();
 		}
 		Thread.sleep(random.nextInt(125) + 125);
+	}
+
+	public void checkQuests() throws Exception {
+		System.out.println("Opening Quest Dialog");
+		moveMouse(526, 375, 16, 16, true, AQWBot.smooth);
+		moveMouse(512, 332, 28, 8, true, AQWBot.smooth);
+		Thread.sleep(random.nextInt(250) + 250);
+	}
+
+	public void closeCheckQuests() throws Exception {
+		System.out.println("Closing Quest Dialog");
+		moveMouse(235, 68, 8, 8, true, AQWBot.smooth);
+		Thread.sleep(random.nextInt(250) + 250);
 	}
 
 	public void clickQuest(int place) throws Exception {
 		System.out.println("Click Quest " + place);
 		int r = 4, x = 35, y = (int) Math.round(103 + ((place - 1) * 14.75));
 		moveMouse(x, y, r, r, true, AQWBot.smooth);
+		Thread.sleep(random.nextInt(500) + 2000);
+	}
+
+	public void questAction() throws Exception {
+		System.out.println("Click Quest Action");
+		moveMouse(104, 317, 12, 12, true, AQWBot.smooth);
+		Thread.sleep(random.nextInt(500) + 2000);
 	}
 
 	public void rest() throws Exception {
 		System.out.println("Resting");
 		typeString("/rest");
+		Thread.sleep(random.nextInt(125) + 125);
 	}
-	
+
 	public void joinRoom(String room, boolean p) throws Exception {
 		System.out.println("Joining /" + room);
 		typeString("/join " + room + (p ? "-" + AQWBot.roomNumber : ""));
+		Thread.sleep(random.nextInt(125) + 125);
 	}
 
 	public void moveToTarget() throws InterruptedException {
@@ -116,6 +146,7 @@ public class ActionHandler {
 		pressKey(KeyEvent.VK_1);
 		Thread.sleep(random.nextInt(100) + 100);
 		pressKey(KeyEvent.VK_1);
+		Thread.sleep(random.nextInt(125) + 125);
 	}
 
 }
