@@ -147,7 +147,9 @@ public class AQWBot {
 
 		// Wait for user to position mouse
 		System.out.println("Open ONE instance of 'aq.com/play-now' on your primary display");
+		System.out.println("Do not login, use the login screen for calibration");
 		System.out.println("Use display quality: Low");
+		System.out.println("Use game size: Tiny");
 		System.out.println("Make sure the entire game is within the display");
 
 		// Calibrate Display
