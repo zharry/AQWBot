@@ -1,0 +1,11 @@
+@author Harry Zhang
+@name Attack 3 Bot
+@shortname Attack 3 Bot
+@version 1.0
+@aqbcversion 17.10.22r1
+@location Room for Bot
+@recommendedclass Any
+
+start
+useskill 3 1000
+restartnocheck

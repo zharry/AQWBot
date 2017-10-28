@@ -248,6 +248,9 @@ public class AQWBot {
 					// END START
 
 					// RESTART
+					case "restartnocheck":
+						cI = startIndex;
+						break;
 					case "restart":
 						cI = startIndex;
 						if (screen.isDisconnected()) {
