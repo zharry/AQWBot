@@ -27,3 +27,5 @@ bin/
 
 # AQW Bot Config Files
 *.aqwbotconfig
+
+.idea/
