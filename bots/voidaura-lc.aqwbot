@@ -1,0 +1,207 @@
+@author Harry Zhang
+@name Void Aura Bot
+@shortname Void Aura Bot
+@version 0.1
+@aqbcversion 20.07.21r1
+@location /join shadowfall
+@recommendedclass LightCaster
+
+
+SKILLCFG RANDINTERVAL 10
+GAMECFG PRIVATEROOM 6247
+
+
+start:
+
+	BRANCH braeusquestaction
+	
+timespace:
+	BRANCH openfasttravel
+	CLICK 370 355
+	PAUSE 8000
+	VAR attackDuration 60
+	BRANCH attack
+	CLICK 935 40
+	PAUSE 5000
+	DROPACCEPT 1
+	PAUSE 3000
+	JOIN shadowfall
+	PAUSE 8000
+	
+citadel:
+	BRANCH openfasttravel
+	CLICK 530 355
+	PAUSE 8000
+	VAR attackDuration 60
+	BRANCH attack
+	CLICK 478 505
+	PAUSE 5000
+	DROPACCEPT 1
+	PAUSE 3000
+	JOIN shadowfall
+	PAUSE 8000
+	
+greenguardwest:
+	BRANCH openfasttravel
+	CLICK 688 238
+	PAUSE 8000
+	VAR attackDuration 60
+	BRANCH attack
+	CLICK 20 505
+	PAUSE 5000
+	DROPACCEPT 1
+	PAUSE 3000
+	JOIN shadowfall
+	PAUSE 8000
+	
+mudluk:
+	BRANCH openfasttravel
+	CLICK 688 275
+	PAUSE 8000
+	VAR attackDuration 60
+	BRANCH attack
+	CLICK 478 505
+	PAUSE 5000
+	DROPACCEPT 1
+	PAUSE 3000
+	JOIN shadowfall
+	PAUSE 8000
+	
+aqlesson:
+	BRANCH openfasttravel
+	CLICK 688 313
+	PAUSE 8000
+	VAR attackDuration 60
+	BRANCH attack
+	CLICK 910 495
+	PAUSE 5000
+	DROPACCEPT 1
+	PAUSE 3000
+	JOIN shadowfall
+	PAUSE 8000
+	
+necrocavern:
+	BRANCH openfasttravel
+	CLICK 688 355
+	PAUSE 8000
+	VAR attackDuration 60
+	BRANCH attack
+	CLICK 478 505
+	PAUSE 5000
+	DROPACCEPT 1
+	PAUSE 3000
+	JOIN shadowfall
+	PAUSE 8000
+	
+hachiko:
+	BRANCH openfasttravel
+	CLICK 851 238
+	PAUSE 8000
+	VAR attackDuration 60
+	BRANCH attack
+	CLICK 17 37
+	PAUSE 5000
+	DROPACCEPT 1
+	PAUSE 3000
+	JOIN shadowfall
+	PAUSE 8000
+	
+timevoid:
+	BRANCH openfasttravel
+	CLICK 851 275
+	PAUSE 8000
+	VAR attackDuration 60
+	BRANCH attack
+	CLICK 478 505
+	PAUSE 5000
+	DROPACCEPT 1
+	PAUSE 3000
+	JOIN shadowfall
+	PAUSE 8000
+	
+dragonchallenge:
+	BRANCH openfasttravel
+	CLICK 851 313
+	PAUSE 8000
+	CLICK 471 144
+	PAUSE 3000
+	BRANCH galanothfight
+	VAR attackDuration 60
+	BRANCH attack
+	CLICK 500 40
+	PAUSE 5000
+	DROPACCEPT 1
+	PAUSE 3000
+	JOIN shadowfall
+	PAUSE 8000
+	
+maul:
+	BRANCH openfasttravel
+	CLICK 851 355
+	PAUSE 8000
+	VAR attackDuration 60
+	BRANCH attack
+	CLICK 478 505
+	PAUSE 5000
+	DROPACCEPT 1
+	PAUSE 3000
+	JOIN shadowfall
+	PAUSE 8000
+	
+	GOTO start
+
+
+openfasttravel:
+	CLICK 196 350
+	PAUSE 1000
+	CLICK 470 400
+	PAUSE 1000
+	RETURN
+
+braeusquestaction:
+	CLICK 196 350
+	PAUSE 1000
+	CLICK 310 400
+	PAUSE 1000
+	QUEST 1
+	PAUSE 3000
+	QUESTACTION
+	PAUSE 3000
+	QUEST 1
+	PAUSE 3000
+	QUESTACTION
+	PAUSE 3000
+	QUEST 1
+	PAUSE 3000
+	QUESTACTION
+	PAUSE 3000
+	QUEST 1
+	PAUSE 3000
+	QUESTACTION
+	PAUSE 3000
+	QUEST 1
+	PAUSE 3000
+	QUESTACTION
+	PAUSE 3000
+	QUESTCLOSE
+	PAUSE 1000
+	RETURN
+
+galanothfight:
+	CLICK 267 233
+	PAUSE 1500
+	CLICK 550 440
+	PAUSE 1500
+	CLICK 515 390
+	PAUSE 2500
+	RETURN
+
+attack:
+	TIMER attackTimer attackDuration
+	SKILL 2 25
+	SKILL 3 25
+	SKILL 4 25
+	SKILL 5 25
+	RETURNIFZERO attackTimer 
+	GOTO attack
+	

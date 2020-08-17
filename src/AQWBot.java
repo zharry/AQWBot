@@ -1,539 +1,228 @@
+import java.awt.Robot;
 import java.io.File;
-import java.io.FileWriter;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.StringJoiner;
 
-import com.sun.glass.events.KeyEvent;
+import AQWBotRuntime.AQWBotRuntime;
+import AQWBotRuntime.ScreenHandler;
+import commands.Branch;
+import commands.Click;
+import commands.Command;
+import commands.DropAccept;
+import commands.GameCFG;
+import commands.Goto;
+import commands.Join;
+import commands.NOP;
+import commands.Pause;
+import commands.Quest;
+import commands.QuestAction;
+import commands.QuestClose;
+import commands.Return;
+import commands.ReturnIfZero;
+import commands.Skill;
+import commands.SkillCFG;
+import commands.Timer;
+import commands.Var;
 
 public class AQWBot {
 
-	public static ActionHandler action;
-	public static ScreenHandler screen;
-
-	public static final String VERSION = "17.10.22r1";
-	public static Random random = new Random();
-
-	public static boolean smooth;
-	public static int roomNumber, consoleMode;
-
-	// Bot Variables
-	static File botFile;
-	public static ArrayList<String> aqbcCommands = new ArrayList<String>();
-	public static String botAuthor = "", botName = "", botShortName = "", botVersion = "", aqbcVersion = "",
-			location = "", recommendedClass = "", botFileString;
-
-	public static void consoleLog(String s, int type) {
-		LocalDateTime now = LocalDateTime.now();
-		String time = String.format("[%02d:%02d:%02d]", now.getHour(), now.getMinute(), now.getSecond());
-		String level = type == 0 ? "INFO" : type == 1 ? "WARN" : "ERROR";
-		if (type == 4)
-			level = "LOG";
-		if (type >= consoleMode)
-			System.out.println(time + "[" + level + "]: " + s);
-	}
+	// PROJECT CONSTANTS
+	public static final String VERSION = "20.07.21r1";
 
 	public static void main(String[] args) throws Exception {
 
-		/*
-		 * AQW BOT CONFIGURATION
-		 */
+		System.out.println("Initializing...");
+
+		AQWBotRuntime.robot = new Robot();
+		AQWBotRuntime.random = new Random();
+		AQWBotRuntime.screenHandler = new ScreenHandler();
 
 		@SuppressWarnings("resource")
 		Scanner s = new Scanner(System.in);
+		System.out.print("Debug On? [0/1] ");
+		AQWBotRuntime.debug = s.nextInt() == 1;
 
+		// Introduction
 		System.out.println("Welcome to Harry's AQW Bot version " + VERSION);
+		System.out.println("Requires AQLite!");
+		System.out.println("Notes:");
+		System.out.println(" - Make sure the client window is at (0,0) with default sizing");
+		System.out.println(
+				" - Use SBP's Custom Drops UI, Inverted Menu, and place the 'Item Drops' text directly underneath the 'Music On/Off' text in /maul");
+		System.out.println(" - Use item drop blacklists corresponding to the farmed item");
+		System.out.println(" - Quest re-accepting must be enabled");
 		System.out.println("----------");
 
-		// Console output level
-		System.out.print("Console output threshold: (info/[warn]/error) ");
-		String consoleOT = s.nextLine();
-		consoleMode = (consoleOT.equals("") || consoleOT.equals("warn")) ? 1 : (consoleOT.equals("error") ? 2 : 0);
-		System.out.println("----------");
-
-		// Bot Variables
-		System.out.print("Activate Smooth Mouse Movement? (y/N) ");
-		smooth = s.nextLine().equals("y") ? true : false;
-		System.out.print("Private Instance Room ID: ");
-		String roomP = s.nextLine();
-		roomNumber = Integer.parseInt(roomP.equals("") ? random.nextInt(79999) + "" : roomP) + 10000;
-		System.out.println("----------");
-
-		// List out installed bots
+		// Find Bots
 		System.out.println("List of Available Bots: ");
 		File allBots = new File("bots/");
 		if (!allBots.exists()) {
 			allBots.mkdir();
 			System.out.println("No Bots found!");
 		} else {
-			File[] allBotsList = allBots.listFiles();
-			for (int i = 0; i < allBotsList.length; i++)
-				if (allBotsList[i].toString().endsWith(".aqwbot"))
-					System.out.println(allBotsList[i].toString().replace(".aqwbot", "").replace("bots\\", "") + " ");
+			AQWBotRuntime.allBotsList = allBots.listFiles();
+			for (int i = 0; i < AQWBotRuntime.allBotsList.length; i++)
+				if (AQWBotRuntime.allBotsList[i].toString().endsWith(".aqwbot"))
+					System.out.println((i + 1) + ". "
+							+ AQWBotRuntime.allBotsList[i].toString().replace(".aqwbot", "").replace("bots\\", "")
+							+ " ");
 		}
+
+		// Get Bot
+		System.out.print("What bot would you like to use? ");
+		int num = s.nextInt() - 1;
+		AQWBotRuntime.botFile = AQWBotRuntime.allBotsList[num];
 		System.out.println("----------");
 
-		// Find last used bot
-		File lastBot = new File("previous_calibration.aqwbotconfig");
-		String lastUsed = null, bot;
-		if (lastBot.exists()) {
-			Scanner lb = new Scanner(lastBot);
-			lb.nextLine();
-			lastUsed = lb.nextLine();
-			lb.close();
+		// Read Bot
+		Scanner readBotCommands = new Scanner(AQWBotRuntime.botFile);
+		while (readBotCommands.hasNext()) {
+			String[] line = readBotCommands.nextLine().split(" ");
+			AQWBotRuntime.commands.add(line);
 		}
+		readBotCommands.close();
 
-		// User chooses bot
-		System.out.print("What bot would you like to use?" + (lastUsed != null ? " (" + lastUsed + ")" : "") + " ");
-		bot = s.nextLine();
-		if (bot.equals("") && lastUsed != null)
-			bot = lastUsed;
-		if (bot.endsWith(".aqwbot"))
-			bot = bot.replace(".aqwbot", "");
-		botFile = new File("bots/" + bot + ".aqwbot");
-		botFileString = bot + ".aqwbot";
+		// Parse Bot
+		for (int i = 0; i < AQWBotRuntime.commands.size(); i++) {
+			String[] commandArgs = AQWBotRuntime.commands.get(i);
+			String command = commandArgs[0];
+			String cArgs = joinString(commandArgs, " ", 1);
 
-		// Output bot metadata
-		@SuppressWarnings("resource")
-		Scanner readBotCmds = new Scanner(botFile);
-		int readIndex = 1;
-		while (readBotCmds.hasNext()) {
-			String readLine = readBotCmds.nextLine();
-			if (readLine.startsWith("@")) {
-				String[] line = readLine.split(" ", 2);
-				// Incorrect Argument Amount Exception
-				if (line.length != 2)
-					throw new AQBCInvalidArgumentAmount(readLine, readIndex, botFileString, 2, line.length);
-				// Process Metadata
-				if (line[0].startsWith("@author")) {
-					botAuthor = line[1];
-				} else if (line[0].startsWith("@name")) {
-					botName = line[1];
-				} else if (line[0].startsWith("@shortname")) {
-					botShortName = line[1];
-				} else if (line[0].startsWith("@version")) {
-					botVersion = line[1];
-				} else if (line[0].startsWith("@aqbcversion")) {
-					aqbcVersion = line[1];
-				} else if (line[0].startsWith("@location")) {
-					location = line[1];
-				} else if (line[0].startsWith("@recommendedclass")) {
-					recommendedClass = line[1];
+			if (command.startsWith("#")) {
+				AQWBotRuntime.parsedCommands.add(new NOP(commandArgs));
+
+				continue;
+			}
+			if (command.endsWith(":")) {
+				AQWBotRuntime.parsedCommands.add(new NOP(commandArgs));
+
+				command = command.replace(":", "");
+				AQWBotRuntime.labels.put(command, i);
+				continue;
+			}
+			if (command.startsWith("@")) {
+				AQWBotRuntime.parsedCommands.add(new NOP(commandArgs));
+
+				command = command.replace("@", "");
+				switch (command) {
+				case "author":
+					System.out.print("Author:");
+					break;
+				case "name":
+					System.out.print("Bot Name:");
+					break;
+				case "shortname":
+					continue;
+				case "version":
+					System.out.print("Bot Version:");
+					break;
+				case "aqbcversion":
+					System.out.print("AQBC Version:");
+					break;
+				case "location":
+					System.out.print("Location:");
+					break;
+				case "recommendedclass":
+					System.out.print("Recommended Class:");
+					break;
 				}
-			}
-			// Process AQBC commands
-			aqbcCommands.add(readLine);
-			readIndex++;
-		}
-		readBotCmds.close();
-
-		System.out.println("----------");
-		System.out.println("Bot: " + botName + " (v" + botVersion + ") | By: " + botAuthor);
-		System.out.println("Running with AQBC Language v" + aqbcVersion + " | AQWBot v" + VERSION);
-		System.out.println("Starting Location: " + location);
-		System.out.println("Using recommended class(es): " + recommendedClass);
-		System.out.println("----------");
-		System.out.print("Start the bot for " + botShortName + "? (Y) ");
-		String a = s.nextLine();
-
-		// Confirm Start
-		while (!(a.equals("") || a.equals("Y"))) {
-			System.out.print("Start the bot for " + bot + "? (Y) ");
-			a = s.nextLine();
-		}
-		System.out.println("----------");
-
-		// Wait for user to position mouse
-		System.out.println("Open ONE instance of 'aq.com/play-now' on your primary display");
-		System.out.println("Do not login, use the login screen for calibration");
-		System.out.println("Use display quality: Low");
-		System.out.println("Use game size: Tiny");
-		System.out.println("Make sure the entire game is within the display");
-
-		// Calibrate Display
-		boolean calDone = false, isLoggedOn = false;
-		int[] xy = { -1, -1 };
-		screen = new ScreenHandler();
-		File prevCalibrate = new File("previous_calibration.aqwbotconfig");
-		if (prevCalibrate.exists()) {
-			System.out.print("Previous calibration detected. Use? (Y) ");
-			String u = s.nextLine();
-			if (u.equals("") || u.equals("Y")) {
-				Scanner fileScanner = new Scanner(prevCalibrate);
-				String[] xyProc = fileScanner.nextLine().split(" ");
-				fileScanner.close();
-				xy[0] = Integer.parseInt(xyProc[0]);
-				xy[1] = Integer.parseInt(xyProc[1]);
-				calDone = true;
-
-				// Check if already logged in
-				if (screen.calibrate() == null) {
-					isLoggedOn = true;
-				}
-			}
-		}
-		if (!calDone) {
-			System.out.println("Calibrating...");
-			for (int i = 3; i > 0; i--) {
-				System.out.println(i + "...");
-				Thread.sleep(1000);
-			}
-			xy = screen.calibrate();
-		}
-		System.out.println("Calibration Completed!");
-		s.close();
-
-		// Write out last bot info
-		if (lastBot.exists()) {
-			FileWriter writeLB = new FileWriter(lastBot);
-			writeLB.write(xy[0] + " " + xy[1] + "\n");
-			writeLB.write(bot);
-			writeLB.close();
-		}
-		System.out.println("----------");
-
-		// Initialize Bot Handlers
-		action = new ActionHandler(xy[0], xy[1]);
-		System.out.println("Bot Initiated!");
-		System.out.println("Console Log Mode: "
-				+ (consoleMode == 0 ? "Info/Warn/Error" : consoleMode == 1 ? "Warn/Error" : "Error"));
-		System.out.println("User Status: " + (isLoggedOn ? "Logged In" : "Logged Off"));
-		System.out.println("AQW Flash Player Begins at : " + xy[0] + ", " + xy[1] + " Size (706x405)");
-		System.out.println("Smooth Mouse movement: " + (smooth ? "Enabled" : "Disabled"));
-		System.out.println("Bot is running for: " + bot);
-		System.out.println("With Private Room Instance Number: " + roomNumber);
-		System.out.println("----------");
-		Thread.sleep(1000);
-
-		/*
-		 * AQW BOT BEGINS
-		 */
-
-		// Login to Game
-		if (!isLoggedOn) {
-			consoleLog("Login", 1);
-			action.moveMouse(319, 232, 74, 23, true, smooth);
-			Thread.sleep(5000);
-			consoleLog("Joing 'Galanoth' Server", 1);
-			action.moveMouse(361, 162, 194, 15, true, smooth);
-			Thread.sleep(10000);
-		}
-
-		// AQBC Variable Table
-		HashMap<String, String> varTable = new HashMap<String, String>();
-
-		// Start AQBC Interpreter
-		int cI = 1; // Command Index
-		int startIndex = -1;
-		for (; cI <= aqbcCommands.size(); cI++) {
-			consoleLog("AQBC Interpreter on line " + cI, 0);
-
-			String cmdProc = aqbcCommands.get(cI - 1);
-
-			// DO and IF Loop
-			for (int c = 0; c < 1; c++) {
-
-				// Ignore Newlines and @metedata commands and #comments
-				if (!(cmdProc.equals("") || cmdProc.startsWith("@") || cmdProc.startsWith("#"))) {
-
-					// Test for Single Argument Commands
-					switch (cmdProc) {
-
-					// START
-					case "start":
-						startIndex = cI;
-						break;
-					// END START
-
-					// RESTART
-					case "restartnocheck":
-						cI = startIndex;
-						break;
-					case "restart":
-						cI = startIndex;
-						if (screen.isDisconnected()) {
-							consoleLog("Re-logging", 2);
-							action.moveMouse(-2, -2, 1, 1, true, smooth);
-							action.pressKey(KeyEvent.VK_F5);
-							Thread.sleep(10000);
-							action.moveMouse(319, 232, 74, 23, true, smooth);
-							Thread.sleep(5000);
-							consoleLog("Joing 'Galanoth' Server", 2);
-							action.moveMouse(361, 162, 194, 15, true, smooth);
-							Thread.sleep(10000);
-							cI = 1;
-						}
-						break;
-					// END RESTART
-
-					// QUESTACTION
-					case "questaction":
-						action.questAction();
-						break;
-					// END QUESTACTION
-
-					// CHECKQUESTS
-					case "checkquests":
-						action.checkQuests();
-						break;
-					// END CHECKQUESTS
-
-					// CLOSECHECKQUESTS
-					case "closecheckquests":
-						action.closeCheckQuests();
-						break;
-					// END CLOSECHECKQUESTS
-
-					// All other 2+ Argument Commands
-					default: {
-
-						// Process Commands
-						String[] cmdProcS = cmdProc.split(" ", 2);
-						String curCmd = cmdProcS[0];
-						if (cmdProcS.length <= 1)
-							throw new AQBCInvalidArgumentAmount(curCmd, cI, botFileString, 2, cmdProcS.length);
-						String curArgs = cmdProcS[1];
-
-						boolean not = false;
-						// Conditionals and Loops
-						switch (curCmd) {
-
-						// IFNOT
-						case "ifnot":
-							not = true;
-							// END IFNOT
-
-							// IF
-						case "if":
-							String[] ifProc = curArgs.split(" : ", 2);
-							String condition, execCmd;
-							try {
-								condition = ifProc[0];
-								execCmd = ifProc[1];
-							} catch (Exception e) {
-								throw new AQBCInvalidArgumentAmount(curCmd, cI, botFileString, 2, cmdProcS.length);
-							}
-							// Conditional Dictionary
-							switch (condition) {
-							case "anyquestcomplete":
-								if (screen.anyQuestComplete()) {
-									c--;
-									cmdProc = execCmd;
-								} else {
-									if (not) {
-										c--;
-										cmdProc = execCmd;
-									}
-								}
-								break;
-							default:
-								// Comparison Conditionals
-								if (condition.startsWith("check-")) {
-									try {
-										String[] condProc = condition.split("-")[1].split("=");
-										String var = condProc[0];
-										String val = condProc[1];
-										if (!varTable.containsKey(var))
-											throw new AQBCUndefinedVariable(var, cI, botFileString);
-										if (val.equals(varTable.get(var))) {
-											c--;
-											cmdProc = execCmd;
-										}
-									} catch (AQBCUndefinedVariable e) {
-										throw e;
-									} catch (Exception e) {
-										throw new AQBCInvalidArgumentValue("if check-", cI, botFileString,
-												"VARIABLE=VALUE");
-									}
-									break;
-								}
-								throw new AQBCInvalidCondition(condition, cI, botFileString);
-							}
-							break;
-						// END IF
-
-						// DO
-						case "do":
-							String[] doProc = curArgs.split(" : ", 2);
-							int repeatVal;
-							String execDCmd;
-							try {
-								repeatVal = Integer.parseInt(doProc[0]);
-								if (repeatVal < 0)
-									throw new Exception();
-							} catch (Exception e) {
-								throw new AQBCInvalidArgumentValue(curCmd, cI, botFileString,
-										"(int [>= 0]) : (command)");
-							}
-							try {
-								execDCmd = doProc[1];
-							} catch (Exception e) {
-								throw new AQBCInvalidArgumentAmount(curCmd, cI, botFileString, 2, cmdProcS.length);
-							}
-							c -= repeatVal;
-							cmdProc = execDCmd;
-							break;
-						// END DO
-
-						// All other Commands
-						default:
-							switch (curCmd) {
-							// SET
-							case "set":
-								try {
-									String[] agProc = curArgs.split(" ");
-									String varName = agProc[0];
-									String varVal = agProc[1];
-									varTable.put(varName, varVal);
-								} catch (Exception e) {
-									throw new AQBCInvalidArgumentValue(curCmd, cI, botFileString, "string, string");
-								}
-								break;
-							// END SET
-
-							// REM
-							case "rem":
-								consoleLog(curArgs, 4);
-								break;
-							// END REM
-
-							// SLEEP
-							case "sleep":
-								try {
-									Thread.sleep(Integer.parseInt(curArgs));
-								} catch (Exception e) {
-									throw new AQBCInvalidArgumentValue(curCmd, cI, botFileString, "int [>= 1]");
-								}
-								break;
-							// END SLEEP
-
-							// JOINROOM
-							case "joinroom":
-								try {
-									String[] agProc = curArgs.split(" ");
-									String room = agProc[0];
-									boolean privateInst = Boolean.parseBoolean(agProc[1]);
-									action.joinRoom(room, privateInst);
-								} catch (Exception e) {
-									throw new AQBCInvalidArgumentValue(curCmd, cI, botFileString, "string, boolean");
-								}
-								break;
-							// END JOINROOM
-
-							// MOVEMOUSE
-							case "movemouse":
-								try {
-									String[] agProc = curArgs.split(" ");
-									int x = Integer.parseInt(agProc[0]), y = Integer.parseInt(agProc[1]),
-											rx = Integer.parseInt(agProc[2]), ry = Integer.parseInt(agProc[3]);
-									boolean click = Boolean.parseBoolean(agProc[4]);
-									if (x < 1 || x > 705 || rx < 1 || rx > 404 || y < 1 || y > 705 || ry < 1
-											|| ry > 404)
-										throw new Exception();
-									action.moveMouse(x, y, rx, ry, click, smooth);
-								} catch (Exception e) {
-									throw new AQBCInvalidArgumentValue(curCmd, cI, botFileString,
-											"int [>= 1][<=705], int [>= 1][<=404], int [>= 1][<=705], int [>= 1][<=404], boolean");
-								}
-								break;
-							// END MOVEMOUSE
-
-							// CLICKQUEST
-							case "clickquest":
-								try {
-									String[] agProc = curArgs.split(" ");
-									int qID = Integer.parseInt(agProc[0]);
-									if (qID < 1)
-										throw new Exception();
-									action.clickQuest(qID);
-								} catch (Exception e) {
-									throw new AQBCInvalidArgumentValue(curCmd, cI, botFileString, "int [>= 1]");
-								}
-								break;
-							// END CLICKQUEST
-
-							// USESKILL
-							case "useskill":
-								try {
-									String[] agProc = curArgs.split(" ");
-									int skillID = Integer.parseInt(agProc[0]), skillCD = Integer.parseInt(agProc[1]);
-									if (skillID < 1 || skillID > 6)
-										throw new Exception();
-									action.useSkill(skillID, skillCD);
-								} catch (Exception e) {
-									throw new AQBCInvalidArgumentValue(curCmd, cI, botFileString,
-											"int [>= 1][<= 6], int [>= 1]");
-								}
-								break;
-							// END USESKILL
-
-							// SYNTAX ERROR
-							default:
-								throw new AQBCSyntaxError(curCmd, cI, botFileString);
-							}
-						}
-					}
-					}
-				}
+				System.out.println(" " + cArgs);
+				continue;
 			}
 
+			// Create commands
+			switch (command.toLowerCase().trim()) {
+			case "var":
+				AQWBotRuntime.parsedCommands.add(new Var(commandArgs));
+				break;
+			case "timer":
+				AQWBotRuntime.parsedCommands.add(new Timer(commandArgs));
+				break;
+
+			case "skillcfg":
+				AQWBotRuntime.parsedCommands.add(new SkillCFG(commandArgs));
+				break;
+			case "gamecfg":
+				AQWBotRuntime.parsedCommands.add(new GameCFG(commandArgs));
+				break;
+
+			case "pause":
+				AQWBotRuntime.parsedCommands.add(new Pause(commandArgs));
+				break;
+			case "goto":
+				AQWBotRuntime.parsedCommands.add(new Goto(commandArgs));
+				break;
+			case "branch":
+				AQWBotRuntime.parsedCommands.add(new Branch(commandArgs));
+				break;
+			case "return":
+				AQWBotRuntime.parsedCommands.add(new Return(commandArgs));
+				break;
+			case "returnifzero":
+				AQWBotRuntime.parsedCommands.add(new ReturnIfZero(commandArgs));
+				break;
+
+			case "skill":
+				AQWBotRuntime.parsedCommands.add(new Skill(commandArgs));
+				break;
+			case "click":
+				AQWBotRuntime.parsedCommands.add(new Click(commandArgs));
+				break;
+
+			case "dropaccept":
+				AQWBotRuntime.parsedCommands.add(new DropAccept(commandArgs));
+				break;
+			case "quest":
+				AQWBotRuntime.parsedCommands.add(new Quest(commandArgs));
+				break;
+			case "questaction":
+				AQWBotRuntime.parsedCommands.add(new QuestAction(commandArgs));
+				break;
+			case "questclose":
+				AQWBotRuntime.parsedCommands.add(new QuestClose(commandArgs));
+				break;
+
+			case "join":
+				AQWBotRuntime.parsedCommands.add(new Join(commandArgs));
+				break;
+
+			default:
+				AQWBotRuntime.parsedCommands.add(new NOP(commandArgs));
+			}
+		}
+		System.out.println("----------");
+		s.nextLine();
+
+		// Run bot
+		for (int i = 3; i > 0; i--) {
+			System.out.println(i + "...");
+			Thread.sleep(1000);
+		}
+		while (AQWBotRuntime.ProgramCounter <= AQWBotRuntime.commands.size()) {
+			
+			if (AQWBotRuntime.debug) {
+				System.out.printf("[%3d] %s", AQWBotRuntime.ProgramCounter,
+						joinString(AQWBotRuntime.commands.get(AQWBotRuntime.ProgramCounter), " ", 0));
+				s.nextLine();
+			}
+
+			Command command = AQWBotRuntime.parsedCommands.get(AQWBotRuntime.ProgramCounter);
+			command.Run();
+
+			AQWBotRuntime.ProgramCounter++;
 		}
 
 	}
 
-}
-
-/*
- * AQBC EXCEPTIONS
- */
-
-class AQBCException extends Exception {
-	private static final long serialVersionUID = -6211041561167007967L;
-
-	public AQBCException(String error, int line, String file) {
-		super("General Syntax Error on line " + line + " of " + file + ". " + error);
+	/* Helper Functions */
+	public static String joinString(String[] toJoin, String delimiter, int start) {
+		StringJoiner joiner = new StringJoiner(delimiter);
+		for (int i = start; i < toJoin.length; i++) {
+			joiner.add(toJoin[i]);
+		}
+		String str = joiner.toString();
+		return str;
 	}
-}
 
-class AQBCSyntaxError extends AQBCException {
-	private static final long serialVersionUID = 833078322789794402L;
-
-	public AQBCSyntaxError(String cmd, int line, String file) {
-		super("Unexpected " + cmd + ", " + cmd + " is not a command.", line, file);
-	}
-}
-
-class AQBCUndefinedVariable extends AQBCException {
-	private static final long serialVersionUID = 5020688399999802898L;
-
-	public AQBCUndefinedVariable(String var, int line, String file) {
-		super("Variable " + var + " is not defined.", line, file);
-	}
-}
-
-class AQBCInvalidArgumentAmount extends AQBCException {
-	private static final long serialVersionUID = 5020688399999802898L;
-
-	public AQBCInvalidArgumentAmount(String cmd, int line, String file, int requiredArgs, int haveArgs) {
-		super("Command " + cmd + " requires exactly " + requiredArgs + " arguments, saw " + haveArgs, line, file);
-	}
-}
-
-class AQBCInvalidArgumentValue extends AQBCException {
-	private static final long serialVersionUID = 5078362393893680007L;
-
-	public AQBCInvalidArgumentValue(String cmd, int line, String file, String requiredArgs) {
-		super("Command " + cmd + " requires arguments <" + requiredArgs + ">.", line, file);
-	}
-}
-
-class AQBCInvalidCondition extends AQBCException {
-
-	private static final long serialVersionUID = -5341391770696846220L;
-
-	public AQBCInvalidCondition(String cond, int line, String file) {
-		super("Conditional " + cond + " is not a valid condition", line, file);
-	}
 }

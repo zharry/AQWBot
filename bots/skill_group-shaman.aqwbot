@@ -1,0 +1,14 @@
+@author Harry Zhang
+@name Attack 3 Bot
+@shortname Attack 3 Bot
+@version 2.0
+@aqbcversion 20.07.16r1
+@location Room for Bot
+@recommendedclass Shaman
+
+
+SKILLCFG RANDINTERVAL 300
+
+start:
+	SKILL 3 1000
+	GOTO start

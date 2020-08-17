@@ -1,0 +1,17 @@
+@author Harry Zhang
+@name Attack All Bot
+@shortname Attack All Bot
+@version 2.0
+@aqbcversion 20.07.16r1
+@location Room for Bot
+@recommendedclass LightCaster, StoneCrusher
+
+
+SKILLCFG RANDINTERVAL 25
+
+start:
+	SKILL 2 75
+	SKILL 3 75
+	SKILL 4 75
+	SKILL 5 75
+	GOTO start
