@@ -1,0 +1,18 @@
+@author Harry Zhang
+@name Attack All Bot
+@shortname Attack All Bot
+@version 2.0
+@aqbcversion 20.07.16r1
+@location Room for Bot
+@recommendedclass Legion Revenant
+
+
+SKILLCFG RANDINTERVAL 25
+
+start:
+	SKILL 1 35
+	SKILL 2 35
+	SKILL 3 35
+	SKILL 4 35
+	SKILL 5 35
+	GOTO start

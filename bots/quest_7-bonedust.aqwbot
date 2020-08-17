@@ -1,0 +1,19 @@
+@author Harry Zhang
+@name Bone Dust Quest
+@shortname Bone Dust Quest
+@version 0.1
+@aqbcversion 20.07.21r1
+@location Any
+@recommendedclass Any
+
+CLICK 25 105
+PAUSE 3000
+	
+quest:
+	QUEST 7
+	PAUSE 1500
+	QUESTACTION
+	PAUSE 1500
+	DROPACCEPT 1
+	PAUSE 500
+	GOTO quest

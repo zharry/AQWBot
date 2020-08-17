@@ -1,0 +1,133 @@
+@author Harry Zhang
+@name [Incomplete] Legion Revenant - Fealty 2
+@shortname Legion Revenant - Fealty 2
+@version 0.1
+@aqbcversion 20.07.21r1
+@location Anywhere
+@recommendedclass Abyssal Angel
+
+
+SKILLCFG RANDINTERVAL 10
+GAMECFG PRIVATEROOM 6247
+
+
+GOTO dragon
+
+start:
+
+grim:
+	JOIN doomvault
+	PAUSE 6000
+	CLICK 290 425
+	PAUSE 3000
+	CLICK 220 360
+	PAUSE 6000
+	CLICK 460 220
+	PAUSE 3000
+	VAR attackDuration 800
+	BRANCH attack
+	CLICK 425 505
+	PAUSE 3000
+	
+ancient:
+	JOIN mummies
+	PAUSE 6000
+	CLICK 450 450
+	VAR attackDuration 800
+	BRANCH attack
+	CLICK 930 350
+	PAUSE 3000
+	
+pirate:
+	JOIN wrath
+	PAUSE 6000
+	CLICK 40 40
+	PAUSE 6000
+	CLICK 920 370
+	PAUSE 5000
+	VAR attackDuration 860
+	BRANCH attack
+	CLICK 5 460
+	PAUSE 3000
+	
+battleon:
+	JOIN doomhaven
+	PAUSE 6000
+	CLICK 840 325
+	PAUSE 3000
+	VAR attackDuration 1000
+	BRANCH attack
+	CLICK 370 500
+	PAUSE 3000
+
+mirror:
+	JOIN overworld
+	PAUSE 6000
+	CLICK 710 460
+	VAR attackDuration 1030
+	BRANCH attack
+	CLICK 930 340
+	PAUSE 3000
+	
+darkblood:
+	JOIN deathpits
+	PAUSE 6000
+	CLICK 195 380
+	PAUSE 3000
+	VAR attackDuration 760
+	BRANCH attack
+	CLICK 70 40
+	PAUSE 3000
+	
+vampire:
+	JOIN maxius
+	PAUSE 6000
+	CLICK 500 450
+	PAUSE 3000
+	CLICK 900 300
+	PAUSE 300
+	VAR attackDuration 900
+	BRANCH attack
+	CLICK 50 370
+	PAUSE 3000
+	
+spirit:
+	JOIN curseshore
+	PAUSE 6000
+	CLICK 500 500
+	VAR attackDuration 1600
+	BRANCH attack
+	CLICK 930 440
+	PAUSE 3000
+	
+dragon:
+	JOIN dragonbone
+	PAUSE 6000
+	VAR attackDuration 1260
+	BRANCH attack
+	CLICK 570 380
+	PAUSE 3000
+	
+doomwood:
+	JOIN doomwood
+	PAUSE 6000
+	CLICK 20 420
+	PAUSE 5000
+	VAR attackDuration 1050
+	BRANCH attack
+	CLICK 810 500
+	PAUSE 3000
+	
+done:
+	PAUSE 10000
+	GOTO done
+	
+	
+attack:
+	TIMER attackTimer attackDuration
+	SKILL 1 25
+	SKILL 3 25
+	SKILL 4 25
+	SKILL 5 25
+	RETURNIFZERO attackTimer 
+	GOTO attack

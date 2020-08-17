@@ -1,0 +1,167 @@
+@author Harry Zhang
+@name [Incomplete/Partial] Legion Revenant - Fealty 3 - Legion Loyalty Reward
+@shortname Legion Revenant - Fealty 3
+@version 0.1
+@aqbcversion 20.07.21r1
+@location Anywhere
+@recommendedclass LightCaster
+
+
+SKILLCFG RANDINTERVAL 10
+GAMECFG PRIVATEROOM 6247
+
+
+start:
+
+acceptquest:
+	JOIN shadowblast
+	PAUSE 8000
+	CLICK 640 215
+	PAUSE 3000
+	CLICK 475 400
+	PAUSE 3000
+	QUEST 6
+	PAUSE 3000
+	QUESTACTION
+	PAUSE 3000
+	DROPACCEPT 2
+	PAUSE 1000
+	DROPACCEPT 1
+	PAUSE 3000
+	
+carnax:
+	JOIN aqlesson
+	PAUSE 8000
+	CLICK 775 225
+	PAUSE 5000
+	CLICK 320 505
+	PAUSE 5000
+	VAR attackDuration 50
+	BRANCH attack
+	CLICK 880 480
+	PAUSE 5000
+	
+kathool:
+	JOIN deepchaos
+	PAUSE 8000
+	CLICK 465 465
+	PAUSE 6500
+	CLICK 765 315
+	PAUSE 6500
+	CLICK 920 420
+	PAUSE 6500
+	CLICK 920 420
+	PAUSE 6500
+	VAR attackDuration 40
+	BRANCH attack
+	CLICK 25 400
+	PAUSE 6500
+
+dragon:
+	JOIN lair
+	PAUSE 8000
+	CLICK 133 384
+	PAUSE 5000
+	CLICK 930 200
+	PAUSE 5000
+	CLICK 930 200
+	PAUSE 3000
+	CLICK 275 145
+	PAUSE 5000
+	CLICK 930 256
+	PAUSE 5000
+	CLICK 930 256
+	PAUSE 3000
+	CLICK 315 190
+	PAUSE 5000
+	CLICK 94 507
+	PAUSE 5000
+	CLICK 925 375
+	PAUSE 5000
+	CLICK 925 375
+	PAUSE 5000
+	CLICK 900 200
+	PAUSE 5000
+	VAR attackDuration 24
+	BRANCH attack
+	CLICK 925 100
+	PAUSE 3000
+	
+fluffy:
+	JOIN dflesson
+	PAUSE 8000
+	CLICK 252 393
+	PAUSE 4000
+	CLICK 870 431
+	PAUSE 4000
+	CLICK 660 345
+	PAUSE 5000
+	VAR attackDuration 26
+	BRANCH attack
+	CLICK 880 480
+	PAUSE 5000
+	
+titan:
+	JOIN bloodtitan
+	PAUSE 8000
+	VAR attackDuration 90
+	BRANCH attack
+	PAUSE 180000
+	
+makai:
+	JOIN evilmarsh
+	PAUSE 8000
+	CLICK 925 400
+	PAUSE 5000
+	VAR attackDuration 180
+	BRANCH attack
+	CLICK 15 360
+	PAUSE 3000
+	DROPACCEPT 2
+	PAUSE 1000
+	DROPACCEPT 1
+	PAUSE 1000
+	
+	GOTO start
+	
+	
+darktoken:
+	VAR attackDuration 60
+	BRANCH attack
+	CLICK 10 450
+	PAUSE 2000
+	BRANCH mega
+	BRANCH mega
+	BRANCH mega
+	BRANCH mega
+	BRANCH mega
+	BRANCH normal
+	BRANCH normal
+	BRANCH normal
+	BRANCH normal
+	BRANCH normal
+	BRANCH normal
+	BRANCH normal
+	BRANCH normal
+	CLICK 920 275
+	PAUSE 2000
+	GOTO darktoken
+	
+mega:
+	CLICK 655 100
+	PAUSE 3000
+	RETURN
+normal:
+	CLICK 620 100
+	PAUSE 3000
+	RETURN
+	
+attack:
+	TIMER attackTimer attackDuration
+	SKILL 1 25
+	SKILL 2 25
+	SKILL 3 25
+	SKILL 4 25
+	SKILL 5 25
+	RETURNIFZERO attackTimer 
+	GOTO attack

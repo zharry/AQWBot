@@ -1,0 +1,44 @@
+@author Harry Zhang
+@name Void Sword Quest
+@shortname Void Sword Quest
+@version 0.1
+@aqbcversion 20.07.21r1
+@location Shadowblast, Monster Room
+@recommendedclass Legion Revenant
+
+SKILLCFG RANDINTERVAL 10
+VAR attackDuration 140
+	
+	
+start:
+	BRANCH attack
+	CLICK 488 40
+	PAUSE 3000
+	DROPACCEPT 2
+	PAUSE 2000
+	DROPACCEPT 1
+	PAUSE 2000
+	
+quest:
+	CLICK 25 105
+	PAUSE 3000
+	QUEST 5
+	PAUSE 4000
+	QUESTACTION
+	PAUSE 4000
+	DROPACCEPT 1
+	PAUSE 3000
+	
+	CLICK 488 40
+	GOTO start
+
+	
+attack:
+	TIMER attackTimer attackDuration
+	SKILL 1 25
+	SKILL 2 25
+	SKILL 3 25
+	SKILL 4 25
+	SKILL 5 25
+	RETURNIFZERO attackTimer 
+	GOTO attack

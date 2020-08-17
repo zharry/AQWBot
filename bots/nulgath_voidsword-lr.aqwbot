@@ -1,0 +1,135 @@
+@author Harry Zhang
+@name Void Sword Quest
+@shortname Void Sword Quest
+@version 0.1
+@aqbcversion 20.07.21r1
+@location Anywhere
+@recommendedclass Legion Revenant
+
+SKILLCFG RANDINTERVAL 10
+GAMECFG PRIVATEROOM 6247
+
+
+start:
+	
+mobius:
+	JOIN mobius
+	PAUSE 8000
+	CLICK 500 200
+	PAUSE 5000
+
+fireimp:
+	VAR attackDuration 35
+	BRANCH attack
+	CLICK 890 285
+	PAUSE 5000
+	
+slugfit:
+	VAR attackDuration 45
+	BRANCH attackthree
+	CLICK 250 505
+	PAUSE 5000
+	
+faerie:
+	JOIN faerie
+	PAUSE 8000
+	CLICK 360 480
+	PAUSE 5000
+	CLICK 920 460
+	PAUSE 5000
+	CLICK 620 360
+	PAUSE 5000
+	CLICK 420 185
+	PAUSE 5000
+	CLICK 467 330
+	PAUSE 5000
+	
+aracara:
+	VAR attackDuration 15
+	BRANCH attack
+	CLICK 920 450
+	PAUSE 5000
+	
+evilmarsh:
+	JOIN evilmarsh
+	PAUSE 8000
+	CLICK 920 400
+	PAUSE 5000
+	
+makai:
+	VAR attackDuration 90
+	BRANCH attack
+	CLICK 10 370
+	PAUSE 5000
+	
+battleunder:
+	JOIN battleunderc
+	PAUSE 8000
+	CLICK 930 360
+	PAUSE 5000
+	CLICK 840 500
+	PAUSE 5000
+	CLICK 800 500
+	PAUSE 5000
+	CLICK 920 480
+	PAUSE 5000
+	
+jellyfish:
+	VAR attackDuration 45
+	BRANCH attack
+	CLICK 10 475
+	PAUSE 5000
+	DROPACCEPT 1
+	PAUSE 2000
+	
+drops:
+	CLICK 785 540
+	PAUSE 8000
+	CLICK 25 105
+	PAUSE 3000
+	QUEST 1
+	PAUSE 3000
+	QUESTACTION
+	PAUSE 3000
+	
+	DROPACCEPT 10
+	PAUSE 2000
+	DROPACCEPT 9
+	PAUSE 2000
+	DROPACCEPT 8
+	PAUSE 2000
+	DROPACCEPT 7
+	PAUSE 2000
+	DROPACCEPT 6
+	PAUSE 2000
+	DROPACCEPT 5
+	PAUSE 2000
+	DROPACCEPT 4
+	PAUSE 2000
+	DROPACCEPT 3
+	PAUSE 2000
+	DROPACCEPT 2
+	PAUSE 2000
+	DROPACCEPT 1
+	PAUSE 2000
+
+	GOTO start
+	
+	
+attack:
+	TIMER attackTimer attackDuration
+	SKILL 1 25
+	SKILL 2 25
+	SKILL 3 25
+	SKILL 4 25
+	SKILL 5 25
+	RETURNIFZERO attackTimer 
+	GOTO attack
+	
+attackthree:
+	TIMER attackTimer attackDuration
+	SKILL 1 25
+	SKILL 2 25
+	SKILL 3 25
+	RETURNIFZERO attackTimer 
+	GOTO attackthree

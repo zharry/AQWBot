@@ -1,0 +1,15 @@
+@author Harry Zhang
+@name AA Just Heal Bot
+@shortname AA Just Heal Bot
+@version 2.0
+@aqbcversion 20.07.16r1
+@location Room for Bot
+@recommendedclass Abyssal Angel, Legion Revenant
+
+
+SKILLCFG RANDINTERVAL 25
+
+start:
+	SKILL 1 125
+	SKILL 4 125
+	GOTO start

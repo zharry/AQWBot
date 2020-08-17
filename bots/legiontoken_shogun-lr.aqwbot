@@ -1,0 +1,58 @@
+@author Harry Zhang
+@name Shogun Pet Legion Token Bot
+@shortname Shogun Pet Legion Token Bot
+@version 0.1
+@aqbcversion 20.07.21r1
+@location /join fotia
+@recommendedclass Legion Revenant
+
+
+SKILLCFG RANDINTERVAL 10
+
+
+start:
+	BRANCH doquest
+	DROPACCEPT 1
+	
+topsection:
+	CLICK 400 40
+	PAUSE 3000
+	VAR attackDuration 120
+	BRANCH attack
+	CLICK 200 500
+	PAUSE 3000
+	
+	GOTO start
+	
+doquest:
+	CLICK 25 105
+	PAUSE 3000
+	QUEST 3
+	PAUSE 3000
+	QUESTACTION
+	PAUSE 3000
+	QUEST 3
+	PAUSE 3000
+	QUESTACTION
+	PAUSE 3000
+	QUEST 3
+	PAUSE 3000
+	QUESTACTION
+	PAUSE 3000
+	QUEST 3
+	PAUSE 3000
+	QUESTACTION
+	PAUSE 3000
+	QUESTCLOSE
+	RETURN
+
+attack:
+	TIMER attackTimer attackDuration
+	SKILL 1 25
+	SKILL 2 25
+	SKILL 3 25
+	SKILL 4 25
+	SKILL 5 25
+	RETURNIFZERO attackTimer 
+	GOTO attack
+	
